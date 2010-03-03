@@ -1,0 +1,71 @@
+<?php
+/**
+* This module contains custom functionality specific to the anthrocon.org
+*	website.
+* 
+* @todo List specific features here. :-)
+*
+* @author Douglas Muth <http://www.claws-and-paws.com/>
+*/
+
+
+/**
+* Our init hook.
+*/
+function anthrocon_custom_init() {
+
+	//
+	// Various debugging statements for testing.
+	//
+	//print "In anthrocon_custom_init()"; // Debugging
+	//anthrocon_watchdog("test: !time", array("!time" =>  time()));
+	//anthrocon_watchdog("test: !time", array("!time" =>  time()), WATCHDOG_WARNING);
+	//anthrocon_watchdog("test: !time", array("!time" =>  time()), WATCHDOG_ERROR);
+
+} // End of anthrocon_custom_init()
+
+
+/**
+* Our wrapper for watchdog()
+*
+* @param string $message The message, which will be passed to t().
+*	For substitution, using !string is probably the way to go.
+*
+* @param array $variables Array of variable substituions for t().
+*
+* @param string $severity Valid values are WATCHDOG_NOTICE, 
+*	WATCHDOG_WARNING, and WATCHDOG_ERROR.
+*
+* @return void
+*
+*/
+function anthrocon_watchdog($message, $variables = array(), 
+	$severity = WATCHDOG_NOTICE) {
+
+	watchdog("anthrocon", $message, $variables, $severity);
+
+} // End of anthrocon_watchdog()
+
+
+/*
+
+Other things to hook:
+	- enable/disable this module
+		- hook_enable(), hook_disable()
+	- publish/unpublish
+		- hook_nodeapi()
+		- hook_comment()
+	- block/unblock user
+		- hook_user()
+	- promote/demote node
+		- hook_nodeapi()
+	- flag
+	- enable/disable another module
+	- send private message
+	- Dump the variables table and compare during cron?
+		- Where to store it?
+		- cache_anthrocon table? :-)
+
+*/
+
+

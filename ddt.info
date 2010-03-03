@@ -1,0 +1,8 @@
+
+name = Doug's Drupal Tools
+description = "Custom tools I wrote for sites that I manage.  Tracks moderator/admin activity, among other things."
+package = Doug's Drupal Tools
+core = 6.x
+
+version = 1.0
+
