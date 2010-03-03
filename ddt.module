@@ -1,7 +1,6 @@
 <?php
 /**
-* This module contains custom functionality specific to the anthrocon.org
-*	website.
+* This module contains custom functionality for sites that I run.
 * 
 * @todo List specific features here. :-)
 *
@@ -12,17 +11,17 @@
 /**
 * Our init hook.
 */
-function anthrocon_custom_init() {
+function ddt_init() {
 
 	//
 	// Various debugging statements for testing.
 	//
-	//print "In anthrocon_custom_init()"; // Debugging
-	//anthrocon_watchdog("test: !time", array("!time" =>  time()));
-	//anthrocon_watchdog("test: !time", array("!time" =>  time()), WATCHDOG_WARNING);
-	//anthrocon_watchdog("test: !time", array("!time" =>  time()), WATCHDOG_ERROR);
+	//print "In ddt_init()"; // Debugging
+	//ddt_log("test: !time", array("!time" =>  time()));
+	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_WARNING);
+	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_ERROR);
 
-} // End of anthrocon_custom_init()
+} // End of ddt_init()
 
 
 /**
@@ -39,12 +38,12 @@ function anthrocon_custom_init() {
 * @return void
 *
 */
-function anthrocon_watchdog($message, $variables = array(), 
+function ddt_log($message, $variables = array(), 
 	$severity = WATCHDOG_NOTICE) {
 
-	watchdog("anthrocon", $message, $variables, $severity);
+	watchdog("ddt", $message, $variables, $severity);
 
-} // End of anthrocon_watchdog()
+} // End of ddt_log()
 
 
 /*
@@ -64,7 +63,7 @@ Other things to hook:
 	- send private message
 	- Dump the variables table and compare during cron?
 		- Where to store it?
-		- cache_anthrocon table? :-)
+		- cache_ddt table? :-)
 
 */
 
