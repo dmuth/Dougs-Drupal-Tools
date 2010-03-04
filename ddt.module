@@ -24,27 +24,6 @@ function ddt_init() {
 } // End of ddt_init()
 
 
-/**
-* Our wrapper for watchdog()
-*
-* @param string $message The message, which will be passed to t().
-*	For substitution, using !string is probably the way to go.
-*
-* @param array $variables Array of variable substituions for t().
-*
-* @param string $severity Valid values are WATCHDOG_NOTICE, 
-*	WATCHDOG_WARNING, and WATCHDOG_ERROR.
-*
-* @return void
-*
-*/
-function ddt_log($message, $variables = array(), 
-	$severity = WATCHDOG_NOTICE) {
-
-	watchdog("ddt", $message, $variables, $severity);
-
-} // End of ddt_log()
-
 
 /*
 
@@ -67,4 +46,26 @@ Other things to hook:
 
 */
 
+
+
+/**
+* Our wrapper for watchdog()
+*
+* @param string $message The message, which will be passed to t().
+*	For substitution, using !string is probably the way to go.
+*
+* @param array $variables Array of variable substituions for t().
+*
+* @param string $severity Valid values are WATCHDOG_NOTICE, 
+*	WATCHDOG_WARNING, and WATCHDOG_ERROR.
+*
+* @return void
+*
+*/
+function ddt_log($message, $variables = array(), 
+	$severity = WATCHDOG_NOTICE) {
+
+	watchdog("ddt", $message, $variables, $severity);
+
+} // End of ddt_log()
 
