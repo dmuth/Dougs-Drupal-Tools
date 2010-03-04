@@ -24,12 +24,25 @@ function ddt_init() {
 } // End of ddt_init()
 
 
+/**
+* Log when this module is enabled.
+*/
+function ddt_enable() {
+	ddt_log("Module enabled");
+}
+
+
+/**
+* Log when this module is disabled.
+*/
+function ddt_disable() {
+	ddt_log("Module disabled");
+}
+
 
 /*
 
 Other things to hook:
-	- enable/disable this module
-		- hook_enable(), hook_disable()
 	- publish/unpublish
 		- hook_nodeapi()
 		- hook_comment()
