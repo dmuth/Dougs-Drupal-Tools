@@ -19,7 +19,7 @@ function ddt_init() {
 	//print "In ddt_init()"; // Debugging
 	//ddt_log("test: !time", array("!time" =>  time()));
 	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_WARNING);
-	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_ERROR);
+	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_ERROR, l("TEST", "http://test"));
 
 } // End of ddt_init()
 
@@ -28,7 +28,7 @@ function ddt_init() {
 * Log when this module is enabled.
 */
 function ddt_enable() {
-	ddt_log("Module enabled");
+	ddt_log("DDT Module enabled");
 }
 
 
@@ -36,8 +36,43 @@ function ddt_enable() {
 * Log when this module is disabled.
 */
 function ddt_disable() {
-	ddt_log("Module disabled");
+	ddt_log("DDT Module disabled");
 }
+
+
+/**
+* This function is called whenever a node is created, changed, etc.
+*/
+function ddt_nodeapi($node, $op) {
+
+	print_r($node); // Debugging
+
+	//
+	// We only care about changes to the post
+	//
+	if ($op != "delete" && $op != "delete revision"
+		&& $op != "insert" && $op != "update") {
+		return(null);
+	}
+
+/*
+TEST/TODO:
+node->moderate
+node->promote
+node->comment
+
+*/
+
+	$message = "Op: %op on NID %nid (%topic).";
+	$variables = array();
+	$variables["%nid"] = $node->nid;
+	$variables["%op"] = $op;
+	$variables["%topic"] = $node->title;
+	$link = l("view", "node/" . $node->nid);
+
+	ddt_log($message, $variables, "", $link);
+
+} // End of hook_nodeapi()
 
 
 /*
@@ -76,9 +111,13 @@ Other things to hook:
 *
 */
 function ddt_log($message, $variables = array(), 
-	$severity = WATCHDOG_NOTICE) {
+	$severity = WATCHDOG_NOTICE, $url = "") {
 
-	watchdog("ddt", $message, $variables, $severity);
+	if ($severity == "") {
+		$severity = WATCHDOG_NOTICE;
+	}
+
+	watchdog("ddt", $message, $variables, $severity, $url);
 
 } // End of ddt_log()
 
