@@ -1,5 +1,5 @@
 
-name = Doug's Drupal Tools
+name = Doug's Drupal Tools (DDT)
 description = "Custom tools I wrote for sites that I manage.  Tracks moderator/admin activity, among other things."
 package = Doug's Drupal Tools
 core = 6.x
