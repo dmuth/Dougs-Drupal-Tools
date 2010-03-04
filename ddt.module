@@ -45,7 +45,7 @@ function ddt_disable() {
 */
 function ddt_nodeapi($node, $op) {
 
-	print_r($node); // Debugging
+	//print_r($node); // Debugging
 
 	//
 	// We only care about changes to the post
@@ -55,31 +55,33 @@ function ddt_nodeapi($node, $op) {
 		return(null);
 	}
 
-/*
-TEST/TODO:
-node->moderate
-node->promote
-node->comment
-
-*/
-
-	$message = "Op: %op on NID %nid (%topic).";
-	$variables = array();
-	$variables["%nid"] = $node->nid;
-	$variables["%op"] = $op;
-	$variables["%topic"] = $node->title;
+	$message = t("Op: %op on NID %nid ")
+		. "(" 
+			. t("Topic: %topic, ")
+			. t("Published?: %published, ")
+			. t("Promoted?: %promoted, ")
+			. t("Sticky?: %sticky, ")
+			. t("Comments allowed?: %comments") . 
+		")";
+	$var = array();
+	$var["%nid"] = $node->nid;
+	$var["%op"] = $op;
+	$var["%topic"] = $node->title;
+	$var["%published"] = $node->status;
+	$var["%promoted"] = $node->promote;
+	$var["%sticky"] = $node->sticky;
+	$var["%comments"] = $node->comment;
 	$link = l("view", "node/" . $node->nid);
 
-	ddt_log($message, $variables, "", $link);
+	ddt_log($message, $var, "", $link);
 
-} // End of hook_nodeapi()
+} // End of ddt_nodeapi()
 
 
 /*
 
 Other things to hook:
 	- publish/unpublish
-		- hook_nodeapi()
 		- hook_comment()
 	- block/unblock user
 		- hook_user()
