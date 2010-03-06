@@ -146,13 +146,48 @@ function ddt_comment($comment, $op) {
 
 } // End of ddt_comment()
 
+
+/**
+* Our user hook.
+*/
+function ddt_user($op, $edit, $user) {
+
+	//
+	// We only care about updates.
+	//
+	if ($op != "update") {
+		return(null);
+	}
+
+	//
+	// If we're updating an account, note if the account is disabled or not.
+	//
+	$status = $edit["status"];
+	$uid = $user->uid;
+	$name = $user->name;
+	$message = t("Updating user ID !uid. ");
+	if ($status == 0) {
+		$message .= t("Current status: blocked");
+	} else {
+		$message .= t("Current status: active.");
+	}
+
+	$var = array();
+	$var["!uid"] = $uid;
+	$link = l("view", "user/" . $uid);
+
+	ddt_log($message, $var, "", $link);
+
+} // End of ddt_user()
+
+
 /*
 
 Other things to hook:
-	- block/unblock user
-		- hook_user()
-	- flag
 	- enable/disable another module
+		- Will hook_disable() work on other modules?
+	- flag
+		- module_invoke_all('flag', 'unflag', $this, $content_id, $account);
 	- send private message
 	- Dump the variables table and compare during cron?
 		- Where to store it?
