@@ -24,3 +24,21 @@ function ddt_schema() {
 
 } // End of ddt_schema()
 
+
+/**
+* Our installation function.
+*/
+function ddt_install() {
+	drupal_install_schema("ddt");
+}
+
+
+/**
+* Our uninstallation function.
+*/
+function ddt_uninstall() {
+	drupal_uninstall_schema("ddt");
+}
+
+
+

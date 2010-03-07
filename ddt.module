@@ -182,22 +182,6 @@ function ddt_put_vars($vars) {
 
 
 /**
-* Our installation function.
-*/
-function ddt_install() {
-	drupal_install_schema("ddt");
-}
-
-
-/**
-* Our uninstallation function.
-*/
-function ddt_uninstall() {
-	drupal_uninstall_schema("ddt");
-}
-
-
-/**
 * Log when this module is enabled.
 */
 function ddt_enable() {
