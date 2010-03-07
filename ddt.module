@@ -466,11 +466,75 @@ function ddt_privatemsg_message_insert($message) {
 * @param array $message An associative array of message information.
 */
 function ddt_privatemsg_message_load($message) {
-	$log_message = t("Read private message. MID: %mid");
+
+	$mid = $message["mid"];
+
+	if (empty($GLOBALS["ddt"]["mid"])) {
+		$GLOBALS["ddt"]["mid"] = array();
+		$GLOBALS["ddt"]["mid"]["high"] = "";
+		$GLOBALS["ddt"]["mid"]["low"] = "";
+	}
+
+	$mids = &$GLOBALS["ddt"]["mid"];
+
+	//
+	// Determine our low and high MIDs.  These will later be logged
+	// in the exit hook.
+	//
+	if (!$mids["high"]
+		|| $mid > $mids["high"]) {
+		$mids["high"] = $mid;
+	}
+	
+	if (!$mids["low"]
+		|| $mid < $mids["low"]) {
+		$mids["low"] = $mid;
+	}
+	
+} // End of ddt_privatemsg_message_load()
+
+
+/**
+* Our exit hook.  It is called at the end of the page load.
+*/
+function ddt_exit() {
+
+	//
+	// No Message IDs?  Stop here.
+	//
+	if (empty($GLOBALS["ddt"]["mid"])) {
+		return(null);
+	}
+
+	$mids = &$GLOBALS["ddt"]["mid"];
 	$var = array();
-	$var["%mid"] = $message["mid"];
-	ddt_log($log_message, $var);
-}
+
+	//
+	// At this point, log evidence of reading private messages.
+	// We do this here, since we'll have "read" all of the messages
+	// any given thread, and can log just the low and high MIDs,
+	// instead of writing a separate log entry for each MID.
+	//
+	if ($mids["high"] == $mids["low"]) {
+		//
+		// There was only a single message in the thread.
+		//
+		$message = t("Read private message. MID: %mid");
+		$var["%mid"] = $mids["low"];
+
+	} else {
+		//
+		// There were multiple messages in the thread.
+		//
+		$message = t("Read private messages. MIDS: %low-%high");
+		$var["%low"] = $mids["low"];
+		$var["%high"] = $mids["high"];
+
+	}
+
+	ddt_log($message, $var);
+
+} // End of ddt_exit()
 
 
 /**
