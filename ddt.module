@@ -251,14 +251,39 @@ function ddt_flag($action, $flag, $id) {
 
 } // End of ddt_flag()
 
+
+/**
+* Hook for inserting a new private message.
+*
+* @param array $message An associative array of message information.
+*/
+function ddt_privatemsg_message_insert($message) {
+	$log_message = t("New private message created. MID: %mid");
+	$var = array();
+	$var["%mid"] = $message["mid"];
+	ddt_log($log_message, $var);
+}
+
+
+/**
+* Hook for viewing a private message.
+*
+* @param array $message An associative array of message information.
+*/
+function ddt_privatemsg_message_load($message) {
+	$log_message = t("Read private message. MID: %mid");
+	$var = array();
+	$var["%mid"] = $message["mid"];
+	ddt_log($log_message, $var);
+}
+
+
 /*
 
 Other things to hook:
-	- send private message
 	- Dump the variables table and compare during cron?
 		- Where to store it?
 		- cache_ddt table? :-)
-
 */
 
 
