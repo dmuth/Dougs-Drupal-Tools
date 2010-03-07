@@ -21,7 +21,180 @@ function ddt_init() {
 	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_WARNING);
 	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_ERROR, l("TEST", "http://test"));
 
+	//ddt_uninstall(); // Debugging
+	//ddt_install(); // Debugging
+
 } // End of ddt_init()
+
+
+/**
+* Our crontab, which is run periodically.
+* Right now, it just compares variables, so we can see if any of our admins
+*	have changed things since the last run.
+*/
+function ddt_cron() {
+
+	$old_vars = ddt_get_vars();
+	$vars = variable_init();
+
+	if (empty($old_vars)) {
+		$message = t("No stored variables found.");
+		ddt_log($message);
+
+	} else {
+		$fields = ddt_get_changed_vars($old_vars, $vars);
+		ddt_log_changed_vars($fields);
+
+	}
+
+	//
+	// Store our variables for the next pass.
+	//
+	ddt_put_vars($vars);
+
+} // End of ddt_cron()
+
+
+/**
+* Compare our old and current variable arrays and see what changed.
+*
+* @param array $old_vars Our array of old values.
+*
+* @param array $vars Our array of current values
+*
+* @return array An associative array which holds new, deleted,
+*	and changed variables.
+*/
+function ddt_get_changed_vars($old_vars, $vars) {
+
+	$retval = array();
+	$retval["new"] = array();
+	$retval["deleted"] = array();
+	$retval["changed"] = array();
+
+	//
+	// Look for new and changed values.
+	//
+	foreach ($vars as $key => $value) {
+
+		if (!array_key_exists($key, $old_vars)) {
+			$retval["new"][] = $key;
+
+		} else {
+			if (serialize($value) != serialize($old_vars[$key])) {
+				$retval["changed"][] = 
+					t("Old value for '$key': ") . serialize($old_vars[$key]) . ", "
+					. t("New value for '$key': ") . serialize($value)
+					;
+			}
+
+		}
+
+	}
+
+	foreach ($old_vars as $key => $value) {
+		if (!array_key_exists($key, $vars)) {
+			$retval["deleted"][] = $key;
+		}
+	}
+
+	return($retval);
+
+} // End of ddt_get_changed_vars()
+
+
+/**
+* Log our changed variables.
+*
+* @param array $fields Array of new, deleted, and changed variables.
+*/
+function ddt_log_changed_vars($fields) {
+
+	if (!empty($fields["new"])) {
+		$message = t("New variables: %vars",
+			array("%vars" => join(", ", $fields["new"]))
+			);
+		ddt_log($message);
+	}
+
+	if (!empty($fields["deleted"])) {
+		$message = t("Deleted variables: %vars",
+			array("%vars" => join(",", $fields["deleted"]))
+			);
+		ddt_log($message);
+	}
+
+	if (!empty($fields["changed"])) {
+		$message = t("Changed variables: %vars",
+			array("%vars" => join(",", $fields["changed"]))
+			);
+		ddt_log($message);
+	}
+
+} // End of ddt_log_changed_vars()
+
+/**
+* Fetch our stored variables.
+* 
+* @return array Our array of stored variables.
+*/
+function ddt_get_vars() {
+
+	$retval = array();
+
+	$query = "SELECT variables FROM {ddt_variables} LIMIT 1";
+	$cursor = db_query($query);
+	$row = db_fetch_array($cursor);
+
+	//
+	// If we got a result, unserialize the string.
+	//
+	if (!empty($row)) {
+		$retval = unserialize($row["variables"]);
+	}
+
+	return($retval);
+
+} // End of ddt_get_vars()
+
+
+/**
+* Store our current variables in the ddt_variables table.
+*
+* @param array $vars Our array of variables.
+*/
+function ddt_put_vars($vars) {
+
+	//
+	// First, wipe out what's there.
+	//
+	$query = "TRUNCATE TABLE {ddt_variables}";
+	db_query($query);
+
+	//
+	// Now serialize and store our current variables.
+	//
+	$vars = serialize($vars);
+	$query = "INSERT INTO {ddt_variables} (variables) VALUES ('%s')";
+	db_query($query, $vars);
+
+} // End of ddt_put_vars()
+
+
+/**
+* Our installation function.
+*/
+function ddt_install() {
+	drupal_install_schema("ddt");
+}
+
+
+/**
+* Our uninstallation function.
+*/
+function ddt_uninstall() {
+	drupal_uninstall_schema("ddt");
+}
 
 
 /**
@@ -276,16 +449,6 @@ function ddt_privatemsg_message_load($message) {
 	$var["%mid"] = $message["mid"];
 	ddt_log($log_message, $var);
 }
-
-
-/*
-
-Other things to hook:
-	- Dump the variables table and compare during cron?
-		- Where to store it?
-		- cache_ddt table? :-)
-*/
-
 
 
 /**
