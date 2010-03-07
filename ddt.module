@@ -19,10 +19,11 @@ function ddt_init() {
 	//print "In ddt_init()"; // Debugging
 	//ddt_log("test: !time", array("!time" =>  time()));
 	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_WARNING);
-	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_ERROR, l("TEST", "http://test"));
+	//ddt_log("test: !time", array("!time" =>  time()), WATCHDOG_ERROR, l("test link", "http://test"));
 
 	//ddt_uninstall(); // Debugging
 	//ddt_install(); // Debugging
+	//ddt_cron(); // Debugging
 
 } // End of ddt_init()
 
@@ -81,10 +82,35 @@ function ddt_get_changed_vars($old_vars, $vars) {
 			$retval["new"][] = $key;
 
 		} else {
+
 			if (serialize($value) != serialize($old_vars[$key])) {
+				$old_value = serialize($old_vars[$key]);
+				$new_value = serialize($value);
+
+				//
+				// Cut off our serialized strings after a certain length
+				// to keep from getting giant multi-megabyte strings 
+				// that kill the browser.
+				//
+				$max_len = 1024;
+
+				if (strlen($old_value) > $max_len) {
+					$old_value = substr($old_value, 0, $max_len) 
+						. t(" (truncated at !max chars)",
+							array("!max" => $max_len))
+					;
+				}
+
+				if (strlen($new_value) > $max_len) {
+					$new_value = substr($new_value, 0, $max_len) 
+						. t(" (truncated at !max chars)",
+							array("!max" => $max_len))
+					;
+				}
+
 				$retval["changed"][] = 
-					t("Old value for '$key': ") . serialize($old_vars[$key]) . ", "
-					. t("New value for '$key': ") . serialize($value)
+					t("Old value for '$key': ") . $old_value . ", "
+					. t("New value for '$key': ") . $new_value
 					;
 			}
 
@@ -119,14 +145,14 @@ function ddt_log_changed_vars($fields) {
 
 	if (!empty($fields["deleted"])) {
 		$message = t("Deleted variables: %vars",
-			array("%vars" => join(",", $fields["deleted"]))
+			array("%vars" => join(", ", $fields["deleted"]))
 			);
 		ddt_log($message);
 	}
 
 	if (!empty($fields["changed"])) {
 		$message = t("Changed variables: %vars",
-			array("%vars" => join(",", $fields["changed"]))
+			array("%vars" => join(", ", $fields["changed"]))
 			);
 		ddt_log($message);
 	}
