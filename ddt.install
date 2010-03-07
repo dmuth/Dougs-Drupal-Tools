@@ -1,0 +1,26 @@
+<?php
+
+/**
+* This function defines the database schema.
+*/
+function ddt_schema() {
+
+	$retval = array();
+
+	$retval["ddt_variables"] = array(
+		"description" => "This table holds a serialized array of the "
+			. "variable data for Drupal, to be used for comparisons for "
+			. "auditing purposes.",
+		"fields" => array(
+			"variables" => array(
+				"description" => "Holds a serialized string of variable data",
+				"type" => "text",
+				"size" => "big",
+			)
+		)
+		);
+
+	return($retval);
+
+} // End of ddt_schema()
+
