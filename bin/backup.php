@@ -164,35 +164,18 @@ function backup_db($db_url) {
 
 
 /**
-* This is the main function which does all of our work.
+* Get a list of all files in the current directory, filter out the current 
+* and parent directories, and any existing backup files.  Trying to make 
+* GNU tar's --exclude switch actually work for me was like trying to herd 
+* housecats that were hopped up on crack.  It just wasn't going to happen. :-)
+* Plus, this approach is more portable.
 *
-* @return NULL
+* @return string A list of files and directories in the Drupal root to 
+*	back up.
 */
-function main() {
+function get_file_list() {
 
-	if (php_sapi_name() != "cli") {
-		$error = "Don't run this from the web interface.";
-		throw new Exception($error);
-	}
-
-	$db_url = load_settings();
-
-	//
-	// Backup our database
-	//
-	$db_data = backup_db($db_url);
-	$db_file = $db_data["db_file"];
-	$date_string = $db_data["date_string"];
-
-	//
-	// Get a list of all files in the current directory, filter out the 
-	// current and parent directories, and any existing backup files.
-	// Trying to make GNU tar's --exclude switch actually work for me
-	// was like trying to herd housecats that were hopped up on crack.
-	// It just wasn't going to happen. :-)  Plus, this approach is
-	// more portable.
-	//
-	$file_list = "";
+	$retval = "";
 
 	$fp = opendir(".");
 
@@ -225,7 +208,10 @@ function main() {
 			continue;
 		}
 
-		$file_list .= $file . " ";
+		//
+		// Okay, add this file onto the list.
+		//
+		$retval .= $file . " ";
 
 	}
 
@@ -236,18 +222,35 @@ function main() {
 
 	closedir($fp);
 
-	//
-	// Finally, add in our database backup.  It's excluded since it's
-	// a backup file just in case there's multiple database dumps lying 
-	// around from previous backups that were aborted.  But we want to
-	// explicitly add in the dump from *this* run of backup.
-	//
-	$file_list .= $db_file;
+	return($retval);
+
+} // End of get_file_list()
+
+
+/**
+* Do the backup of our file system under the Drupal root.
+*
+* @param string $date_string The string of the current date.  This is passed
+*	in, since we use the same string as we did for our database backup.
+*	Yes you Drupal purists, I know I could have created a function called
+*	get_date_string() or similar to create the string on the first call, store
+*	it in a static variable, and return that static variable on subsequent
+*	calls.  But I just didn't see the point since there's only 2 functions
+*	involved.  And now I just wasted like 5 lines of comments. :-P
+*
+* @param string $file_list The list of files to back up.
+*
+* @param string $db_file The name of the database file.
+*
+* @return null
+*/
+function backup_files($date_string, $file_list, $db_file) {
 
 	//
 	// Now tar up the contents of this directory
 	//
 	$backup_tmp = tempnam("/tmp", "backup-htdocs-");
+
 	//
 	// This includes a six digit random number to keep attackers from
 	// guessing the filename.
@@ -302,6 +305,50 @@ function main() {
 		throw new Exception($error);
 	}
   
+	return(null);
+
+} // End of backup_files()
+
+
+/**
+* This is the main function which does all of our work.
+*
+* @return NULL
+*/
+function main() {
+
+	if (php_sapi_name() != "cli") {
+		$error = "Don't run this from the web interface.";
+		throw new Exception($error);
+	}
+
+	$db_url = load_settings();
+
+	//
+	// Backup our database
+	//
+	$db_data = backup_db($db_url);
+	$db_file = $db_data["db_file"];
+	$date_string = $db_data["date_string"];
+
+	//
+	// Get our list of files to back up.
+	//
+	$file_list = get_file_list();
+
+	//
+	// Finally, add in our database backup.  It's excluded since it's
+	// a backup file just in case there's multiple database dumps lying 
+	// around from previous backups that were aborted.  But we want to
+	// explicitly add in the dump from *this* run of backup.
+	//
+	$file_list .= $db_file;
+
+	//
+	// Now backup all of our files
+	//
+	backup_files($date_string, $file_list, $db_file);
+
 } // End of main()
 
 main(); 
