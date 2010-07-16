@@ -304,7 +304,10 @@ function backup_files($date_string, $file_list, $db_file) {
 		$error = "chmod() failed";
 		throw new Exception($error);
 	}
-  
+
+	$message = "Backup written to '$backup_file' in Drupal root.\n";
+	print $message;
+ 
 	return(null);
 
 } // End of backup_files()
