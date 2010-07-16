@@ -2,9 +2,9 @@
 <?php
 /**
 *
-* Drupal Backup 1.0.
+* Drupal Backup script.
 *
-* Copyright 2007, Douglas Muth (http://www.claws-and-paws.com/)
+* Copyright 2010, Douglas Muth (http://www.dmuth.org/)
 *
 * This program is released under the terms of the the GNU Public License (GPL)
 *
@@ -39,12 +39,43 @@ function main() {
 	// glash in the database name.
 	//
 	$file = "sites/default/settings.php";
-	//chdir("..");
-	if (!is_file($file)) {
-		$error = "Unable to load file '$file'.  Did you run this from "
-			. "DOCUMENT_ROOT?";
+	$target_file = "";
+
+	//
+	// Loop until we found a valid settings file, going into the parent
+	// directory on each pass.
+	//
+	// A postitive side effect of this loop is that we'll be in Drupal's root 
+	// directory, so the backup file will go there.
+	//
+	$dir = getcwd();
+	while ($dir != "/") {
+
+		$target_file = $dir;
+		$target_file = $dir . "/" . $file;
+
+		if (is_file($target_file)) {
+			break;
+		}
+
+		if (!chdir("..")) {
+			$error = "chdir() failed. (current dir: $dir)";
+			return($error);
+		}
+
+		$dir = getcwd();
+
+	} // End of while()
+
+	//
+	// If we can't find the target file, complain.
+	//
+	if (!is_file($target_file)) {
+		$error = "Unable to find settings.php file. Are you under "
+			. "the DOCUMENT_ROOT?";
 		return($error);
 	}
+
 	require_once($file);
 
 	$db_data = parse_url($db_url);
