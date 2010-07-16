@@ -81,18 +81,15 @@ function load_settings() {
 
 
 /**
-* This is the main function which does all of our work.
+* Back up the database
 *
-* @return NULL
+* @param string $db_url The database URL.
+*
+* @return array An associative array of the database backup file and date string
 */
-function main() {
+function backup_db($db_url) {
 
-	if (php_sapi_name() != "cli") {
-		$error = "Don't run this from the web interface.";
-		throw new Exception($error);
-	}
-
-	$db_url = load_settings();
+	$retval = array();
 
 	$db_data = parse_url($db_url);
 	$db_data["path"][0] = " ";
@@ -101,6 +98,7 @@ function main() {
 	// Create our date string for filenames
 	//
 	$date_string = date("YmdHis");
+	$retval["date_string"] = $date_string;
 
 	//
 	// Create our database temp file
@@ -130,6 +128,7 @@ function main() {
 		. " |gzip >$db_file_tmp "
 		;
 
+	//print "Debug: $cmd\n"; // Debugging
 	print "Backing up database...\n";
 	$fp = popen($cmd, "r");
 
@@ -138,10 +137,10 @@ function main() {
 		throw new Exception($error);
 	}
 
-	$retval = pclose($fp);
+	$cmd_retval = pclose($fp);
 
-	if ($retval != 0) {
-		$error = "Command '$cmd' returned value: $retval";
+	if ($cmd_retval != 0) {
+		$error = "Command '$cmd' returned value: $cmd_retval";
 		throw new Exception($error);
 	}
 
@@ -155,6 +154,35 @@ function main() {
 		$error = "Renaming file '$db_file_tmp' to '$db_file' failed";
 		throw new Exception($error);
 	}
+
+	//print "Debug: Renamed '$db_file_tmp' to '$db_file\n"; // Debugging
+
+	$retval["db_file"] = $db_file;
+	return($retval);
+
+} // End of backup_db()
+
+
+/**
+* This is the main function which does all of our work.
+*
+* @return NULL
+*/
+function main() {
+
+	if (php_sapi_name() != "cli") {
+		$error = "Don't run this from the web interface.";
+		throw new Exception($error);
+	}
+
+	$db_url = load_settings();
+
+	//
+	// Backup our database
+	//
+	$db_data = backup_db($db_url);
+	$db_file = $db_data["db_file"];
+	$date_string = $db_data["date_string"];
 
 	//
 	// Get a list of all files in the current directory, filter out the 
