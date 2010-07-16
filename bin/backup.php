@@ -21,18 +21,13 @@
 
 
 /**
-* This is the main function which does all of our work.
+* Load our settings file so that we can get database credentials.
 *
-* @return mixed NULL is returned on success, otherwise an error is returned.
-* 	This allows us to "catch" errors and let them bubble up the call stack,
-*	not unlike exceptions in PHP 5.
+* @return string The URL to access the database.
 */
-function main() {
+function load_settings() {
 
-	if (php_sapi_name() != "cli") {
-		$error = "Don't run this from the web interface.";
-		return($error);
-	}
+	$retval = "";
 
 	//
 	// Load the settings, parse the database URL, and remove the leading 
@@ -73,10 +68,31 @@ function main() {
 	if (!is_file($target_file)) {
 		$error = "Unable to find settings.php file. Are you under "
 			. "the DOCUMENT_ROOT?";
-		return($error);
+		throw new Exception($error);
 	}
 
 	require_once($file);
+
+	$retval = $db_url;
+
+	return($retval);
+
+} // End of load_settings()
+
+
+/**
+* This is the main function which does all of our work.
+*
+* @return NULL
+*/
+function main() {
+
+	if (php_sapi_name() != "cli") {
+		$error = "Don't run this from the web interface.";
+		throw new Exception($error);
+	}
+
+	$db_url = load_settings();
 
 	$db_data = parse_url($db_url);
 	$db_data["path"][0] = " ";
@@ -101,7 +117,7 @@ function main() {
 
 	if (empty($db_file_tmp)) {
 		$error = "call to tempnam() failed";
-		return($error);
+		throw new Exception($error);
 	}
 
 	//
@@ -119,14 +135,14 @@ function main() {
 
 	if (empty($fp)) {
 		$error = "Unable to run command '$cmd'";
-		return($error);
+		throw new Exception($error);
 	}
 
 	$retval = pclose($fp);
 
 	if ($retval != 0) {
 		$error = "Command '$cmd' returned value: $retval";
-		return($error);
+		throw new Exception($error);
 	}
 
 	print "Done!\n";
@@ -137,7 +153,7 @@ function main() {
 	//
 	if (!rename($db_file_tmp, $db_file)) {
 		$error = "Renaming file '$db_file_tmp' to '$db_file' failed";
-		return($error);
+		throw new Exception($error);
 	}
 
 	//
@@ -187,7 +203,7 @@ function main() {
 
 	if (!$fp) {
 		$error = "Unable to open current directory";
-		return($error);
+		throw new Exception($error);
 	}
 
 	closedir($fp);
@@ -218,7 +234,7 @@ function main() {
 
 	if (empty($fp)) {
 		$error = "Unable to run command '$cmd'";
-		return($error);
+		throw new Exception($error);
 	}
 
 	while ($line = fgets($fp)) {
@@ -229,7 +245,7 @@ function main() {
 
 	if ($retval != 0) {
 		$error = "Command '$cmd' returned value: $retval";
-		return($error);
+		throw new Exception($error);
 	}
 
 	print "Done!\n";
@@ -239,7 +255,7 @@ function main() {
 	//
 	if (!@unlink($db_file)) {
 		$error = "Unable to delete file '$db_file'";
-		return($error);
+		throw new Exception($error);
 	}
 
 	//
@@ -247,7 +263,7 @@ function main() {
 	//
 	if (!rename($backup_tmp, $backup_file)) {
 		$error = "Renaming file '$backup_tmp' to '$backup_file' failed";
-		return($error);
+		throw new Exception($error);
 	}
 
 	//
@@ -255,19 +271,10 @@ function main() {
 	//
 	if (!chmod($backup_file, 0644)) {
 		$error = "chmod() failed";
-		return($error);
+		throw new Exception($error);
 	}
   
-	// Assume success
-	return(null);
-
 } // End of main()
 
+main(); 
 
-if ($error = main()) {
-	print $argv[0] . ": Error: $error\n";
-	exit (1);
-}
-
-
-?>
