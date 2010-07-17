@@ -21,6 +21,68 @@
 
 
 /**
+* Get our current directory.
+* This function was writtent to account for having a symlink as a parent
+* directory.  Unfortunately, getcwd() will dereference the symlink, which
+* I don't want when trying to find settings.php.
+*
+* @return string The full path to the current directory.
+*/
+function getcwd_local() {
+
+	$retval = shell_exec("pwd");
+	$retval = rtrim($retval);
+
+	if ($retval == false) {
+		$error = "system() call to 'pwd' failed!";
+		throw new Exception($error);
+	}
+
+	return($retval);
+
+} // End of getcwd_local()
+
+
+/**
+* Get our parent directory
+* This makes use of getcwd_local(), and manually chops off the last 
+* directory to again deal with symlink issues.
+*
+* @param string $dir A directory
+*
+* @return string The parent directory.
+*/
+function get_parent_dir($dir) {
+	
+	$retval = $dir;
+
+	//
+	// We're already at the top of the tree.
+	//
+	if ($retval == "/") {
+		return($retval);
+	}
+
+	//
+	// Remove a trailing slash
+	//
+	$retval = preg_replace("|/$|", "", $retval);
+
+	//
+	// Remove the last directory
+	//
+	$retval = preg_replace("|/[^/]+$|", "", $retval);
+
+	if ($retval == "") {
+		$retval = "/";
+	}
+
+	return($retval);
+
+} // End of get_parent_dir()
+
+
+/**
 * Load our settings file so that we can get database credentials.
 *
 * @return string The URL to access the database.
@@ -43,22 +105,22 @@ function load_settings() {
 	// A postitive side effect of this loop is that we'll be in Drupal's root 
 	// directory, so the backup file will go there.
 	//
-	$dir = getcwd();
+	$dir = getcwd_local();
+
 	while ($dir != "/") {
 
-		$target_file = $dir;
 		$target_file = $dir . "/" . $file;
+		//print "Target file: $target_file\n"; // Debugging
 
 		if (is_file($target_file)) {
 			break;
 		}
 
-		if (!chdir("..")) {
+		$dir = get_parent_dir($dir);
+		if (!chdir($dir)) {
 			$error = "chdir() failed. (current dir: $dir)";
 			return($error);
 		}
-
-		$dir = getcwd();
 
 	} // End of while()
 
