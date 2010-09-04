@@ -320,7 +320,7 @@ function backup_files($date_string, $file_list, $db_file) {
 	$backup_file = "backup-" . $date_string 
 		. "-" . mt_rand(100000, 999999) . ".tar.gz";
 
-	$cmd = "tar cfz $backup_tmp $file_list 2>&1";
+	$cmd = "tar cfzh $backup_tmp $file_list 2>&1";
 
 	print "Backing up filesystem...\n";
 	$fp = popen($cmd, "r");
@@ -336,9 +336,14 @@ function backup_files($date_string, $file_list, $db_file) {
 
 	$retval = pclose($fp);
 
+	//
+	// Sometimes there might be issues with symlinks that point nowhere,
+	// thanks to the way my deployment system for templates works.
+	//
 	if ($retval != 0) {
 		$error = "Command '$cmd' returned value: $retval";
-		throw new Exception($error);
+		print "WARNING: $error\n";
+		//throw new Exception($error);
 	}
 
 	print "Done!\n";
