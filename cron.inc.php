@@ -31,6 +31,32 @@ function ddt_cron() {
 	//
 	ddt_put_vars($vars);
 
+	$chat_delete = variable_get("ddt_chat_delete", false);
+	if ($chat_delete) {
+
+		$query = "SELECT "
+			. "max(cmid) AS cmid "
+			. "FROM {chatroom_msg}"
+			;
+		$cursor = db_query($query);
+		$row = db_fetch_array($cursor);
+		$cmid = $row["cmid"];
+		$cmid = $cmid - 1000;
+		$cmid = 1; // Debugging
+		if ($cmid > 0) {
+			$message = t("Deleting all chatroom messages with ID <= %id",
+				array("%id" => $cmid));
+			ddt_log($message);
+			$query = "DELETE FROM {chatroom_msg} "
+				. "WHERE "
+				. "cmid <= '%s' "
+				;
+			$query_args = array($cmid);
+			db_query($query, $query_args);
+		}
+
+	}
+
 } // End of ddt_cron()
 
 

@@ -19,12 +19,6 @@ function ddt_settings($arg = "", $arg2 = "", $arg3 = "") {
 	$retval = "";
 
 	$retval .= drupal_get_form("ddt_settings_form");
-/*
-TODO:
-	- checkbox option to delete all but last 1000 lines of chat in cron
-	- checkbox to redirect to Google search
-
-*/
 
 	return($retval);
 
