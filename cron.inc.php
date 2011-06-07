@@ -13,6 +13,21 @@
 */
 function ddt_cron() {
 
+	ddt_cron_vars();
+
+	$chat_delete = variable_get("ddt_chat_delete", false);
+	if ($chat_delete) {
+		ddt_cron_chat();
+	}
+
+} // End of ddt_cron()
+
+
+/**
+* Code to check system variables while in cron.
+*/
+function ddt_cron_vars() {
+
 	$old_vars = ddt_get_vars();
 	$vars = variable_init();
 
@@ -31,8 +46,13 @@ function ddt_cron() {
 	//
 	ddt_put_vars($vars);
 
-	$chat_delete = variable_get("ddt_chat_delete", false);
-	if ($chat_delete) {
+} // End of ddt_cron_vars()
+
+
+/**
+* Delete old chatroom messages.
+*/
+function ddt_cron_chat() {
 
 		$query = "SELECT "
 			. "max(cmid) AS cmid "
@@ -55,8 +75,6 @@ function ddt_cron() {
 			db_query($query, $query_args);
 		}
 
-	}
-
-} // End of ddt_cron()
+} // End of ddt_cron_chat()
 
 
