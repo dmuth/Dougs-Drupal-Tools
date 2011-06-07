@@ -54,7 +54,7 @@ function ddt_goto($url) {
 	$url = "http://" . $_SERVER["HTTP_HOST"] . $url;
 	$header = "Location: $url";
 	$message = "Redirecting to '" . $url . "' ";
-	ddt_debug($message); // Debugging
+	//ddt_debug($message); // Debugging
 	//ddt_log($message); // Doesn't seem to work in hook_boot()
 	header($header);
 	exit();
