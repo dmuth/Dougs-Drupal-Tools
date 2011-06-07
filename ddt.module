@@ -123,3 +123,20 @@ function ddt_log($message, $variables = array(),
 
 } // End of ddt_log()
 
+
+/**
+* Our debugging function.
+*
+* @param mixed $message Can be a string or an array to print out.
+*/
+function ddt_debug($message) {
+
+	if (is_array($message)) {
+		$message = print_r($message, true);
+	}
+
+	drupal_set_message("DDT Debug: " . $message);
+
+} // End of ddt_debug()
+
+
