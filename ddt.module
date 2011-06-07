@@ -20,6 +20,49 @@ require_once("vars.inc.php");
 
 
 /**
+* Our boot hook, executed even on cached pages.
+*/
+function ddt_boot() {
+
+	$search_google = variable_get("ddt_search_google", false);
+	if ($search_google) {
+
+		$uri = request_uri();
+
+		if ($uri == "/search") {
+			ddt_goto("/search/google");
+		}
+
+		$regexp = "|^/search/node/(.*)|";
+		if (preg_match($regexp, $uri, $results)) {
+			$url = "/search/google/" . $results[1];
+			ddt_goto($url);
+		}	
+
+	}
+
+} // End of ddt_boot()
+
+
+/**
+* Our own verison of drupal_goto(), since it's not available in hook_boot().
+*
+* @param string $url The URL/URI to go to.
+*/
+function ddt_goto($url) {
+
+	$url = "http://" . $_SERVER["HTTP_HOST"] . $url;
+	$header = "Location: $url";
+	$message = "Redirecting to '" . $url . "' ";
+	ddt_debug($message); // Debugging
+	//ddt_log($message); // Doesn't seem to work in hook_boot()
+	header($header);
+	exit();
+
+} // End of ddt_goto()
+
+
+/**
 * Our init hook.
 */
 function ddt_init() {
