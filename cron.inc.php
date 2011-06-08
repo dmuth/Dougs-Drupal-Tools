@@ -64,6 +64,9 @@ function ddt_cron_chat() {
 	$row = db_fetch_array($cursor);
 	$num_rows = $row["cmid"];
 
+	//
+	// Now figure out what rows we're deleting.
+	//
 	$query = "SELECT "
 		. "max(cmid) AS cmid "
 		. "FROM {chatroom_msg}"
