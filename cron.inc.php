@@ -54,6 +54,16 @@ function ddt_cron_vars() {
 */
 function ddt_cron_chat() {
 
+	//
+	// Get the number of rows
+	//
+	$query = "SELECT COUNT(cmid) AS cmid "
+		. "FROM {chatroom_msg} "
+		;
+	$cursor = db_query($query);
+	$row = db_fetch_array($cursor);
+	$num_rows = $row["cmid"];
+
 	$query = "SELECT "
 		. "max(cmid) AS cmid "
 		. "FROM {chatroom_msg}"
@@ -62,10 +72,11 @@ function ddt_cron_chat() {
 	$row = db_fetch_array($cursor);
 	$cmid = $row["cmid"];
 	$cmid = $cmid - 1000;
-	$cmid = 1; // Debugging
+	$num_delete = $num_rows - 1000;
+	//$cmid = 1; // Debugging
 	if ($cmid > 0) {
-		$message = t("Deleting all chatroom messages with ID <= %id",
-			array("%id" => $cmid));
+		$message = t("Deleting all chatroom messages with ID <= %id (%num messages)",
+			array("%id" => $cmid, "%num" => $num_delete));
 		ddt_log($message);
 		$query = "DELETE FROM {chatroom_msg} "
 			. "WHERE "
