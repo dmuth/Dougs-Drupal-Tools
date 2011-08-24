@@ -53,6 +53,13 @@ function ddt_settings_form($form_state) {
 		"#default_value" => variable_get("ddt_chat_delete", false),
 		);
 
+	$retval["settings"]["spam_bio"] = array(
+		"#type" => "checkbox",
+		"#title" => t("Prevent spam in the user's bio"),
+		"#description" => t("If checked, we don't allow uers to have excessive URLs in their bio"),
+		"#default_value" => variable_get("ddt_spam_bio", false),
+		);
+
 	$retval["settings"]["submit"] = array(
 		"#type" => "submit",
 		"#value" => "Save",
@@ -76,8 +83,10 @@ function ddt_settings_form_submit($form, $form_state) {
 
 	$search_google = $values["search_google"];
 	$chat_delete = $values["chat_delete"];
+	$spam_bio = $values["spam_bio"];
 	variable_set("ddt_search_google", $search_google);
 	variable_set("ddt_chat_delete", $chat_delete);
+	variable_set("ddt_spam_bio", $spam_bio);
 
 } // End of ddt_settings_form_submit()
 
