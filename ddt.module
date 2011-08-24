@@ -2,9 +2,7 @@
 /**
 * This module contains custom functionality for sites that I run.
 * 
-* @todo List specific features here. :-)
-*
-* @author Douglas Muth <http://www.claws-and-paws.com/>
+* @author Douglas Muth <http://www.dmuth.org/>
 */
 
 
@@ -15,6 +13,7 @@ require_once("menu.inc.php");
 require_once("nodeapi.inc.php");
 require_once("privatemsg.inc.php");
 require_once("settings.inc.php");
+require_once("spam.inc.php");
 require_once("user.inc.php");
 require_once("vars.inc.php");
 
@@ -175,7 +174,7 @@ function ddt_log($message, $variables = array(),
 function ddt_debug($message) {
 
 	if (is_array($message)) {
-		$message = print_r($message, true);
+		$message = "<pre>" . print_r($message, true) . "</pre>";
 	}
 
 	drupal_set_message("DDT Debug: " . $message);
