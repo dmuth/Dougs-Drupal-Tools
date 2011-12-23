@@ -6,6 +6,7 @@
 */
 
 
+require_once("abuse.inc.php");
 require_once("comment.inc.php");
 require_once("cron.inc.php");
 require_once("flag.inc.php");
@@ -83,6 +84,7 @@ function ddt_main($arg = "", $arg2 = "", $arg3 = "") {
 	$retval = "";
 
 	$retval .= drupal_get_form("ddt_settings_form");
+	$retval .= drupal_get_form("ddt_abuse_form");
 
 	return($retval);
 
@@ -199,7 +201,7 @@ function ddt_log($message, $variables = array(),
 */
 function ddt_debug($message) {
 
-	if (is_array($message)) {
+	if (is_array($message) || gettype($message) == "object") {
 		$message = "<pre>" . print_r($message, true) . "</pre>";
 	}
 
