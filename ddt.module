@@ -18,6 +18,12 @@ require_once("user.inc.php");
 require_once("vars.inc.php");
 
 
+//
+// Our number of messages to keep.
+//
+$GLOBALS["ddt_num_messages"] = 5000;
+
+
 /**
 * Our boot hook, executed even on cached pages.
 */
@@ -76,7 +82,7 @@ function ddt_init() {
 
 	//ddt_uninstall(); // Debugging
 	//ddt_install(); // Debugging
-	//ddt_cron(); // Debugging
+	ddt_cron(); // Debugging
 
 } // End of ddt_init()
 

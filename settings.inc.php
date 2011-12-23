@@ -33,6 +33,7 @@ function ddt_settings($arg = "", $arg2 = "", $arg3 = "") {
 function ddt_settings_form($form_state) {
 
 	$retval = array();
+	$ddt_num_messages = $GLOBALS["ddt_num_messages"];
 
 	$retval["settings"] = array(
 		"#type" => "fieldset",
@@ -48,8 +49,8 @@ function ddt_settings_form($form_state) {
 
 	$retval["settings"]["chat_delete"] = array(
 		"#type" => "checkbox",
-		"#title" => t("Delete all but last 1000 chat messages"),
-		"#description" => t("If checked, all but the last 1000 chat messages will be deleted during cron runs."),
+		"#title" => t("Delete all but last $ddt_num_messages chat messages"),
+		"#description" => t("If checked, all but the last $ddt_num_messages chat messages will be deleted during cron runs."),
 		"#default_value" => variable_get("ddt_chat_delete", false),
 		);
 

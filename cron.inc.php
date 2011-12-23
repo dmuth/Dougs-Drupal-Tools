@@ -54,6 +54,8 @@ function ddt_cron_vars() {
 */
 function ddt_cron_chat() {
 
+	$ddt_num_messages = $GLOBALS["ddt_num_messages"];
+
 	//
 	// Get the number of rows
 	//
@@ -73,10 +75,19 @@ function ddt_cron_chat() {
 		;
 	$cursor = db_query($query);
 	$row = db_fetch_array($cursor);
+
+	//
+	// Our max CMID
+	//
 	$cmid = $row["cmid"];
-	$cmid = $cmid - 1000;
-	$num_delete = $num_rows - 1000;
+
+	//
+	// Get our target CMID to delete before.
+	//
+	$cmid = $cmid - $ddt_num_messages;
+	$num_delete = $num_rows - $ddt_num_messages;
 	//$cmid = 1; // Debugging
+
 	if ($cmid > 0) {
 		$message = t("Deleting all chatroom messages with ID <= %id (%num messages)",
 			array("%id" => $cmid, "%num" => $num_delete));
@@ -87,6 +98,11 @@ function ddt_cron_chat() {
 			;
 		$query_args = array($cmid);
 		db_query($query, $query_args);
+
+	} else {
+		$message = t("Not enough messages to delete. (Needed at least $ddt_num_messages!)");
+		ddt_log($message);
+
 	}
 
 } // End of ddt_cron_chat()
