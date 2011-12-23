@@ -52,9 +52,9 @@ TODO:
 	//
 	// All done with our search, reset this session variable!
 	//
-	if ($_SESSION["ddt"]["abuse"]["search"]) {
-// TEST
-		//unset($_SESSION["ddt"]["abuse"]["search"]);
+	//$no_unset_debug = true; // Debugging
+	if ($_SESSION["ddt"]["abuse"]["search"] && !$no_unset_debug) {
+		unset($_SESSION["ddt"]["abuse"]["search"]);
 	}
 
 	$retval["abuse"]["submit"] = array(
@@ -100,32 +100,48 @@ function ddt_abuse_get_user_ips($ddt_abuse_users) {
 	// Get our array of users/UIDs and trim the whitespace from each.
 	//
 	$users = explode(",", $ddt_abuse_users);
+	//ddt_debug("Search criteria: " . print_r($users, true)); // Debugging
 	foreach ($users as $key => $value) {
 		$users[$key] = ltrim(rtrim($value));
 	}
 
 	//
-	// Now convert usernames to UIDs
-	//
-	// This should scale up to a few 10s of thousands of users.
+	// First, search by user ID.
+	// If we can't find the UID, then assume it's a user name and put into 
+	// the $users_left array.
 	//
 	$uids = array();
+	$users_left = array();
 	foreach ($users as $key => $value) {
-		$query = "SELECT uid FROM {users} "
-			. "WHERE "
-			. "name = '%s' "
-			;
-		$query_args = array($value);
-		$cursor = db_query($query, $query_args);
-		$row = db_fetch_array($cursor);
 
-		if ($row["uid"]) {
-			$uids[] = $row["uid"];
+		$user = user_load($value);
+		if ($user) {
+			$uids[$user->uid] = $user->uid;
+
 		} else {
-			$uids[] = $value;
+			$users_left[] = $value;
+
 		}
 
 	}
+
+	foreach ($users_left as $key => $value) {
+
+		$params = array("name" => $value);
+		$user = user_load($params);
+
+		if ($user) {
+			$uids[$user->uid] = $user->uid;
+
+		} else {
+			$error = t("Unable to find username '%name'!", array("%name" => $value));
+			drupal_set_message($error, "error");
+
+		}
+
+	}
+
+	//ddt_debug("UIDs: " . print_r($uids, true)); // Debugging
 
 	//
 	// Get IPs for all UIDs
