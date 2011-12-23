@@ -29,12 +29,16 @@ function ddt_settings_form($form_state) {
 		"#default_value" => variable_get("ddt_search_google", false),
 		);
 
-	$retval["settings"]["chat_delete"] = array(
-		"#type" => "checkbox",
-		"#title" => t("Delete all but last $ddt_num_messages chat messages"),
-		"#description" => t("If checked, all but the last $ddt_num_messages chat messages will be deleted during cron runs."),
-		"#default_value" => variable_get("ddt_chat_delete", false),
-		);
+	if (module_exists("chatroom")) {
+
+		$retval["settings"]["chat_delete"] = array(
+			"#type" => "checkbox",
+			"#title" => t("Delete all but last $ddt_num_messages chat messages"),
+			"#description" => t("If checked, all but the last $ddt_num_messages chat messages will be deleted during cron runs."),
+			"#default_value" => variable_get("ddt_chat_delete", false),
+			);
+
+	}
 
 	$retval["settings"]["spam_bio"] = array(
 		"#type" => "checkbox",

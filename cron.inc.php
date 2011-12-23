@@ -15,9 +15,13 @@ function ddt_cron() {
 
 	ddt_cron_vars();
 
-	$chat_delete = variable_get("ddt_chat_delete", false);
-	if ($chat_delete) {
-		ddt_cron_chat();
+	if (module_exists("chatroom")) {
+
+		$chat_delete = variable_get("ddt_chat_delete", false);
+		if ($chat_delete) {
+			ddt_cron_chat();
+		}
+
 	}
 
 } // End of ddt_cron()

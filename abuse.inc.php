@@ -72,33 +72,32 @@ function ddt_abuse_form($form_state) {
 
 	}
 
-	$oldest_message = ddt_abuse_get_chat_oldest_message();
-	$retval["abuse"]["chat"] = array(
-		"#type" => "textfield",
-		"#title" => t("Search chat logs"),
-		"#description" => t("Search messages in chatlogs for a string. "
-			. "Useful for investigating reports of harassment, abuse, or spam. "
-			. "This is also a very intensive query. "
-			. "Oldest message is from: <b>$oldest_message</b>"),
-		"#default_value" => $ddt_abuse_chat,
-		);
+	if (module_exists("chatroom")) {
+		$oldest_message = ddt_abuse_get_chat_oldest_message();
+		$retval["abuse"]["chat"] = array(
+			"#type" => "textfield",
+			"#title" => t("Search chat logs"),
+			"#description" => t("Search messages in chatlogs for a string. "
+				. "Useful for investigating reports of harassment, abuse, or spam. "
+				. "This is also a very intensive query. "
+				. "Oldest message is from: <b>$oldest_message</b>"),
+			"#default_value" => $ddt_abuse_chat,
+			);
 
-	if ($_SESSION["ddt"]["abuse"]["search"]) {
+		if ($_SESSION["ddt"]["abuse"]["search"]) {
 
-		if ($ddt_abuse_chat) {
-			$retval["abuse"]["chat_results"] = array(
-				"#type" => "item",
-				"#title" => "Chat Search Results",
-				"#value" => ddt_abuse_get_chat_results($ddt_abuse_chat),
-				);
+			if ($ddt_abuse_chat) {
+				$retval["abuse"]["chat_results"] = array(
+					"#type" => "item",
+					"#title" => "Chat Search Results",
+					"#value" => ddt_abuse_get_chat_results($ddt_abuse_chat),
+					);
+			}
+
 		}
 
 	}
 
-/*
-TODO:
-	- Conditionally don't display chat stuff if chat module not loaded
-*/
 	$retval["abuse"]["submit"] = array(
 		"#type" => "submit",
 		"#value" => "Go!",
