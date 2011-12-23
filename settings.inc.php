@@ -71,6 +71,8 @@ function ddt_settings_form_submit($form, $form_state) {
 	variable_set("ddt_chat_delete", $chat_delete);
 	variable_set("ddt_spam_bio", $spam_bio);
 
+	drupal_set_message("Settings updated!");
+
 } // End of ddt_settings_form_submit()
 
 
