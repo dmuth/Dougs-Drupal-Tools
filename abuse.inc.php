@@ -17,6 +17,7 @@ function ddt_abuse_form($form_state) {
 
 	$ddt_abuse_users = variable_get("ddt_abuse_users", "");
 	$ddt_abuse_ips = variable_get("ddt_abuse_ips", "");
+	$ddt_abuse_chat = variable_get("ddt_abuse_chat", "");
 
 	$retval["abuse"] = array(
 		"#type" => "fieldset",
@@ -50,7 +51,9 @@ function ddt_abuse_form($form_state) {
 		"#title" => t("View Users of IPs"),
 		"#description" => t("Enter 1 or more comma-delimited IP addresses "
 			. "to see what users came from them. "
-			. "Using % wildcards is acceptable."),
+			. "Using % wildcards is acceptable."
+			. "This is an intensive query and WILL hammer the server.  I warned ya!"
+			),
 		"#default_value" => $ddt_abuse_ips,
 		);
 
@@ -64,16 +67,37 @@ function ddt_abuse_form($form_state) {
 				"#type" => "item",
 				"#title" => "IP User Results",
 				"#value" => ddt_abuse_get_ip_users($ddt_abuse_ips),
-			);
+				);
+		}
+
+	}
+
+	$oldest_message = ddt_abuse_get_chat_oldest_message();
+	$retval["abuse"]["chat"] = array(
+		"#type" => "textfield",
+		"#title" => t("Search chat logs"),
+		"#description" => t("Search messages in chatlogs for a string. "
+			. "Useful for investigating reports of harassment, abuse, or spam. "
+			. "This is also a very intensive query. "
+			. "Oldest message is from: <b>$oldest_message</b>"),
+		"#default_value" => $ddt_abuse_chat,
+		);
+
+	if ($_SESSION["ddt"]["abuse"]["search"]) {
+
+		if ($ddt_abuse_chat) {
+			$retval["abuse"]["chat_results"] = array(
+				"#type" => "item",
+				"#title" => "Chat Search Results",
+				"#value" => ddt_abuse_get_chat_results($ddt_abuse_chat),
+				);
 		}
 
 	}
 
 /*
 TODO:
-	- Add search field for logs from chatlog
-		- Give date of oldest log entry
-		- Update README.md
+	- Conditionally don't display chat stuff if chat module not loaded
 */
 	$retval["abuse"]["submit"] = array(
 		"#type" => "submit",
@@ -107,9 +131,11 @@ function ddt_abuse_form_submit($form, $form_state) {
 
 	$users = $values["users"];
 	$ips = $values["ips"];
+	$chat = $values["chat"];
 
 	variable_set("ddt_abuse_users", $users);
 	variable_set("ddt_abuse_ips", $ips);
+	variable_set("ddt_abuse_chat", $chat);
 
 	$_SESSION["ddt"]["abuse"]["search"] = true;
 
@@ -311,5 +337,90 @@ function ddt_abuse_get_ip_users($ddt_abuse_ips) {
 
 } // End of ddt_abuse_get_ip_users()
 
+
+/**
+* Get the datestamp of our oldest chatroom message.
+*
+* @return string A string of our oldest message date.
+*/
+function ddt_abuse_get_chat_oldest_message() {
+
+	$retval = "(No Messages Found)";
+
+	$query = "SELECT modified FROM {chatroom_msg} "
+		. "ORDER BY cmid "
+		. "LIMIT 1 "
+		;
+	$cursor = db_query($query);
+	$row = db_fetch_array($cursor);
+
+	if ($row && $row["modified"]) {
+		$retval = format_date($row["modified"]);
+	}
+
+	return($retval);
+
+} // End of ddt_abuse_get_chat_oldest_message()
+
+
+/**
+* Search through chat for our string and get our results.
+*
+* @param string $ddt_abuse_chat Our string to search for
+*
+* @return string HTML of the matching chat room messages.
+*/
+function ddt_abuse_get_chat_results($ddt_abuse_chat) {
+
+	$retval = "";
+
+	//
+	// Take off whitespace, for sanity.
+	//
+	$ddt_abuse_chat = ltrim(rtrim($ddt_abuse_chat));
+
+	$max = 50;
+
+	$query = "SELECT uid, msg, modified "
+		. "FROM {chatroom_msg} "
+		. "WHERE "
+		. "msg LIKE '%%%s%%' "
+		. "ORDER BY cmid "
+		. "LIMIT $max "
+		;
+	$query_args = array($ddt_abuse_chat);
+	$cursor = db_query($query, $query_args);
+
+	$results = array();
+	while ($row = db_fetch_array($cursor)) {
+
+		$uid = $row["uid"];
+		$date = $row["modified"];
+		$message = $row["msg"];
+
+		$user = user_load($uid);
+		$name = $user->name;
+		$link = l ($name, "user/" . $uid);
+
+		$date_string = format_date($date, "custom", "r");
+
+		$result = $date_string . " " . $link . ": " . $message;
+		$results[] = $result;
+
+	}
+
+	if ($results) {
+		$retval = theme("item_list", $results);
+	}
+
+	if ($retval) {
+		$message = t("Maximum number of chat search results is currently: %max",
+			array("%max" => $max));
+		drupal_set_message($message);
+	}
+
+	return($retval);
+
+} // End of ddt_abuse_get_chat_results()
 
 

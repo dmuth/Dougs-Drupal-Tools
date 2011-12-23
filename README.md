@@ -20,6 +20,7 @@ Anti-abuse tools:
 
 - See what IPs a user or a list of users came from
 - See what users came from a given IP (helpful for spotting sockpuppets)
+- Search chats from the [Chat Room module](http://drupal.org/project/chatroom) to investigate and verify claims of abuse, harassment, and/or spam.
 
 
 Where can it be found?
