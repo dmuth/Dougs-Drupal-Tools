@@ -20,6 +20,8 @@ require_once("vars.inc.php");
 
 //
 // Our number of messages to keep.
+// (Yeah, I know this shouldn't be a global variable.  
+// I'll make that be a setting I can configure in a future release...)
 //
 $GLOBALS["ddt_num_messages"] = 5000;
 
