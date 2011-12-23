@@ -16,26 +16,17 @@ function ddt_abuse_form($form_state) {
 	$retval = array();
 
 	$ddt_abuse_users = variable_get("ddt_abuse_users", "");
+	$ddt_abuse_ips = variable_get("ddt_abuse_ips", "");
 
 	$retval["abuse"] = array(
 		"#type" => "fieldset",
 		"#title" => t("Anti-Abuse"),
 		);
 
-/*
-TODO:
-	- Add search field for IPs and what usernames used those
-		- Allow wildcards so I can search netblocks
-			- Will have to use OR LIKE syntax in query...
-		- Update README.md
-	- Add search field for logs from chatlog
-		- Give date of oldest log entry
-		- Update README.md
-*/
 	$retval["abuse"]["users"] = array(
 		"#type" => "textfield",
 		"#title" => t("View User IPs"),
-		"#description" => t("Enter 1 or more comma-delimited usernames or UIDs."),
+		"#description" => t("Enter 1 or more comma-delimited usernames or UIDs. (UIDs take precedence)"),
 		"#default_value" => $ddt_abuse_users,
 		);
 
@@ -47,13 +38,43 @@ TODO:
 		if ($ddt_abuse_users) {
 			$retval["abuse"]["user_ips"] = array(
 				"#type" => "item",
-				"#title" => "User IPs",
+				"#title" => "User IP Results",
 				"#value" => ddt_abuse_get_user_ips($ddt_abuse_users),
 				);
 		}
 
 	}
 
+	$retval["abuse"]["ips"] = array(
+		"#type" => "textfield",
+		"#title" => t("View Users of IPs"),
+		"#description" => t("Enter 1 or more comma-delimited IP addresses "
+			. "to see what users came from them. "
+			. "Using % wildcards is acceptable."),
+		"#default_value" => $ddt_abuse_ips,
+		);
+
+	//
+	// If this is set do a search.
+	//
+	if ($_SESSION["ddt"]["abuse"]["search"]) {
+
+		if ($ddt_abuse_ips) {
+			$retval["abuse"]["ip_users"] = array(
+				"#type" => "item",
+				"#title" => "IP User Results",
+				"#value" => ddt_abuse_get_ip_users($ddt_abuse_ips),
+			);
+		}
+
+	}
+
+/*
+TODO:
+	- Add search field for logs from chatlog
+		- Give date of oldest log entry
+		- Update README.md
+*/
 	$retval["abuse"]["submit"] = array(
 		"#type" => "submit",
 		"#value" => "Go!",
@@ -82,9 +103,14 @@ function ddt_abuse_form_validate($form, $form_state) {
 function ddt_abuse_form_submit($form, $form_state) {
 
 	$values = $form_state["values"];
+	//ddt_debug($values); // Debugging
 
 	$users = $values["users"];
+	$ips = $values["ips"];
+
 	variable_set("ddt_abuse_users", $users);
+	variable_set("ddt_abuse_ips", $ips);
+
 	$_SESSION["ddt"]["abuse"]["search"] = true;
 
 } // End of ddt_abuse_form_submit()
@@ -195,6 +221,95 @@ function ddt_abuse_get_user_ips($ddt_abuse_users) {
 	return($retval);
 
 } // End of ddt_abuse_get_user_ips()
+
+
+/**
+* Search for users from 1 or more IP addresses.
+*
+* @param string $ddt_abuse_users A comma-delimited string of IPs.
+*
+* @return string HTML of Users from each IP.
+*/
+function ddt_abuse_get_ip_users($ddt_abuse_ips) {
+	
+	$retval = "";
+
+	//
+	// Get our array of IPs and trim the whitespace from each.
+	//
+	$ips = explode(",", $ddt_abuse_ips);
+	//ddt_debug("Search criteria: " . print_r($ips, true)); // Debugging
+	foreach ($ips as $key => $value) {
+		$ips[$key] = ltrim(rtrim($value));
+	}
+
+	//
+	// Now, loop through each IP and search the database
+	//
+	$ip_list = array();
+	foreach ($ips as $key => $value) {
+
+		$ip = $value;
+		$query = "SELECT uid FROM {accesslog} "
+			. "WHERE "
+			. "hostname LIKE '%s' "
+			. "GROUP BY uid "
+			;
+		$query_args = array($ip);
+		$cursor = db_query($query, $query_args);
+
+		while ($row = db_fetch_array($cursor)) {
+			$uid = $row["uid"];
+			if ($uid != 0) {
+
+				if (empty($ip_list[$ip])) {
+					$ip_list[$ip] = array();
+				}
+
+				$ip_list[$ip][]= $uid;
+
+			}
+
+		}
+
+	}
+
+	ksort($ip_list);
+
+	//
+	// Now create usernames and links for each IP
+	//
+	foreach ($ip_list as $key => $value) {
+
+		$ip = $value;
+
+		foreach ($ip as $key2 => $value2) {
+
+			$uid = $value2;
+			$user = user_load($uid);
+			$name = $user->name;
+			$url = l($name, "user/" . $uid);
+			$ip_list[$key][$key2] = $url;
+
+		}
+
+	}
+
+	//
+	// Now collapse each list of users into an array
+	//
+	foreach ($ip_list as $key => $value) {
+		$ip_list[$key] = $key . ": " . join($value, ", ");
+	}
+
+	//
+	// Finally, turn it into HTML
+	//
+	$retval = theme("item_list", $ip_list);
+
+	return($retval);
+
+} // End of ddt_abuse_get_ip_users()
 
 
 

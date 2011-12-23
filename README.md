@@ -19,6 +19,7 @@ Current feature list
 Anti-abuse tools:
 
 - See what IPs a user or a list of users came from
+- See what users came from a given IP (helpful for spotting sockpuppets)
 
 
 Where can it be found?
