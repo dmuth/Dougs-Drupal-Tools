@@ -24,8 +24,13 @@ function ddt_abuse_form($form_state) {
 
 /*
 TODO:
-	- Add search field for IPs
+	- Add search field for IPs and what usernames used those
+		- Allow wildcards so I can search netblocks
+			- Will have to use OR LIKE syntax in query...
+		- Update README.md
 	- Add search field for logs from chatlog
+		- Give date of oldest log entry
+		- Update README.md
 */
 	$retval["abuse"]["users"] = array(
 		"#type" => "textfield",
@@ -180,6 +185,7 @@ function ddt_abuse_get_user_ips($ddt_abuse_users) {
 		$url = "user/" . $key;
 		$link = l($username, $url);
 
+		sort($value);
 		$ip_string = $link . ": " . join($value, ", ");
 		$user_list[] = $ip_string;
 	}
