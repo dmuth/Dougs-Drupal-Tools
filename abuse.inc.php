@@ -49,6 +49,11 @@ TODO:
 
 	}
 
+	$retval["abuse"]["submit"] = array(
+		"#type" => "submit",
+		"#value" => "Go!",
+		);
+
 	//
 	// All done with our search, reset this session variable!
 	//
@@ -56,11 +61,6 @@ TODO:
 	if ($_SESSION["ddt"]["abuse"]["search"] && !$no_unset_debug) {
 		unset($_SESSION["ddt"]["abuse"]["search"]);
 	}
-
-	$retval["abuse"]["submit"] = array(
-		"#type" => "submit",
-		"#value" => "Go!",
-		);
 
 	return($retval);
 
