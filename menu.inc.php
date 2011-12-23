@@ -19,7 +19,7 @@ function ddt_menu() {
 	$retval["admin/settings/ddt"] = array(
 		"title" => "DDT",
 		"description" => t("DDT Settings"),
-		"page callback" => "ddt_settings",
+		"page callback" => "ddt_main",
 		"page arguments" => array(3, 4, 5),
 		"access callback" => "user_access",
 		"access arguments" => array("administer nodes"),

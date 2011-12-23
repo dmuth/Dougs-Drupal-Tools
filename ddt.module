@@ -72,6 +72,24 @@ function ddt_init() {
 
 
 /**
+* Our main settings page.
+*
+* @param string $arg, $arg2, $arg3 Optional page arguments
+*
+* @return string HTML code of the page
+*/
+function ddt_main($arg = "", $arg2 = "", $arg3 = "") {
+
+	$retval = "";
+
+	$retval .= drupal_get_form("ddt_settings_form");
+
+	return($retval);
+
+} // End of ddt_settings()
+
+
+/**
 * Our own verison of drupal_goto(), since it's not available in hook_boot().
 *
 * @param string $url The URL/URI to go to.

@@ -8,24 +8,6 @@
 
 
 /**
-* Our main settings page.
-*
-* @param string $arg, $arg2, $arg3 Optional page arguments
-*
-* @return string HTML code of the page
-*/
-function ddt_settings($arg = "", $arg2 = "", $arg3 = "") {
-
-	$retval = "";
-
-	$retval .= drupal_get_form("ddt_settings_form");
-
-	return($retval);
-
-} // End of ddt_settings()
-
-
-/**
 * Our settings form.
 *
 * @return array An array of form data
