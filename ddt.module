@@ -24,7 +24,8 @@ require_once("vars.inc.php");
 // (Yeah, I know this shouldn't be a global variable.  
 // I'll make that be a setting I can configure in a future release...)
 //
-$GLOBALS["ddt_num_messages"] = 5000;
+//$GLOBALS["ddt_num_messages"] = 5000;
+$GLOBALS["ddt_num_messages"] = 10000;
 
 
 /**
