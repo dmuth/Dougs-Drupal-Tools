@@ -23,16 +23,14 @@ function ddt_abuse_form($form_state) {
 		);
 
 /*
-		- Add features to view all IPs from a comma-delimited list of users
-			- Can be usernames or UIDs
-				- Strip whitespace
-				- Convert all to usernames
-
+TODO:
+	- Add search field for IPs
+	- Add search field for logs from chatlog
 */
 	$retval["abuse"]["users"] = array(
 		"#type" => "textfield",
 		"#title" => t("View User IPs"),
-		"#description" => t("Enter 1 or more comma-delimited usernames or UIDs"),
+		"#description" => t("Enter 1 or more comma-delimited usernames or UIDs."),
 		"#default_value" => $ddt_abuse_users,
 		);
 
