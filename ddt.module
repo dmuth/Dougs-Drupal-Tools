@@ -84,7 +84,7 @@ function ddt_init() {
 
 	//ddt_uninstall(); // Debugging
 	//ddt_install(); // Debugging
-	ddt_cron(); // Debugging
+	//ddt_cron(); // Debugging
 
 } // End of ddt_init()
 
