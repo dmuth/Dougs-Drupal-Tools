@@ -13,6 +13,8 @@
 */
 function ddt_cron() {
 
+	ddt_log("Starting DDT cron entry.");
+
 	ddt_cron_vars();
 
 	if (module_exists("chatroom")) {
@@ -23,6 +25,8 @@ function ddt_cron() {
 		}
 
 	}
+
+	ddt_log("Done with DDT cron entry!");
 
 } // End of ddt_cron()
 
