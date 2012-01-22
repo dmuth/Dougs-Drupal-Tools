@@ -84,8 +84,13 @@ function ddt_main($arg = "", $arg2 = "", $arg3 = "") {
 
 	$retval = "";
 
-	$retval .= drupal_get_form("ddt_settings_form");
-	$retval .= drupal_get_form("ddt_abuse_form");
+	if ($arg == "abuse") {
+		$retval .= drupal_get_form("ddt_abuse_form");
+
+	} else {
+		$retval .= drupal_get_form("ddt_settings_form");
+
+	}
 
 	return($retval);
 

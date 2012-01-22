@@ -18,11 +18,31 @@ function ddt_menu() {
 
 	$retval["admin/settings/ddt"] = array(
 		"title" => "DDT",
-		"description" => t("DDT Settings"),
 		"page callback" => "ddt_main",
 		"page arguments" => array(3, 4, 5),
 		"access callback" => "user_access",
 		"access arguments" => array("administer nodes"),
+		"type" => MENU_NORMAL_ITEM,
+		);
+
+	$retval["admin/settings/ddt/main"] = array(
+		"title" => "Settings",
+		"page callback" => "ddt_main",
+		"page arguments" => array(3, 4, 5),
+		"access callback" => "user_access",
+		"access arguments" => array("administer nodes"),
+		"type" => MENU_DEFAULT_LOCAL_TASK,
+		"weight" => 0,
+		);
+
+	$retval["admin/settings/ddt/abuse"] = array(
+		"title" => "Anti-Abuse",
+		"page callback" => "ddt_main",
+		"page arguments" => array(3, 4, 5),
+		"access callback" => "user_access",
+		"access arguments" => array("administer nodes"),
+		"type" => MENU_LOCAL_TASK,
+		"weight" => 1,
 		);
 
 	return($retval);
