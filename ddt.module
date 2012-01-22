@@ -7,6 +7,7 @@
 
 
 require_once("abuse.inc.php");
+require_once("about.inc.php");
 require_once("comment.inc.php");
 require_once("cron.inc.php");
 require_once("flag.inc.php");
@@ -86,6 +87,9 @@ function ddt_main($arg = "", $arg2 = "", $arg3 = "") {
 
 	if ($arg == "abuse") {
 		$retval .= drupal_get_form("ddt_abuse_form");
+
+	} else if ($arg == "about") {
+		$retval .= ddt_about();
 
 	} else {
 		$retval .= drupal_get_form("ddt_settings_form");

@@ -20,22 +20,21 @@ Anti-abuse tools:
 
 - See what IPs a user or a list of users came from
 - See what users came from a given IP (helpful for spotting sockpuppets)
-- Search chats from the [Chat Room module](http://drupal.org/project/chatroom) to investigate and verify claims of abuse, harassment, and/or spam.
+- Search chats from the  Chat Room module (http://drupal.org/project/chatroom) to investigate and verify claims of abuse, harassment, and/or spam.
 
 
 Where can it be found?
 ----------------------
-This module is currently deployed on [Anthrocon.org](http://www.anthrocon.org/), 
-[SaveArdmoreCoalition.org](http://www.saveardmorecoalition.org/), and 
-[Pennsylvania Furries](http://www.pa-furry.org/).
+This module is currently deployed on http://www.anthrocon.org/,
+http://www.saveardmorecoalition.org/, and http://www.pa-furry.org/.
 
 Questions? Comments?
 --------------------
-[Let me know!](http://www.dmuth.org/contact)
+Let me know! http://www.dmuth.org/contact
 
 More Tools
 ----------
-I also wrote a Drupal Template with social networking support: 
-[http://code.google.com/p/dougs-drupal-templates/](http://code.google.com/p/dougs-drupal-templates/)
+I also wrote a Drupal Template with social networking support:
+https://github.com/dmuth/Dougs-Drupal-Templates
 
 

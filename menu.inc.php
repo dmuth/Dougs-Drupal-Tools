@@ -45,6 +45,16 @@ function ddt_menu() {
 		"weight" => 1,
 		);
 
+	$retval["admin/settings/ddt/about"] = array(
+		"title" => "About",
+		"page callback" => "ddt_main",
+		"page arguments" => array(3, 4, 5),
+		"access callback" => "user_access",
+		"access arguments" => array("administer nodes"),
+		"type" => MENU_LOCAL_TASK,
+		"weight" => 2,
+		);
+
 	return($retval);
 
 } // End of ddt_menu()
