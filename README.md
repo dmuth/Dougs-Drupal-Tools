@@ -28,13 +28,20 @@ Where can it be found?
 This module is currently deployed on http://www.anthrocon.org/,
 http://www.saveardmorecoalition.org/, and http://www.pa-furry.org/.
 
-Questions? Comments?
---------------------
-Let me know! http://www.dmuth.org/contact
+
+Where can this module be downloaded form?
+-----------------------------------------
+It's on GitHub at: https://github.com/dmuth/Dougs-Drupal-Tools
+
 
 More Tools
 ----------
 I also wrote a Drupal Template with social networking support:
 https://github.com/dmuth/Dougs-Drupal-Templates
+
+
+Questions? Comments?
+--------------------
+Let me know! http://www.dmuth.org/contact
 
 
