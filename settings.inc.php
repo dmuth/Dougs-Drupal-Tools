@@ -25,7 +25,7 @@ function ddt_settings_form($form_state) {
 	$retval["settings"]["search_google"] = array(
 		"#type" => "checkbox",
 		"#title" => t("Redirect to Google Search"),
-		"#description" => t("If the Google Search module is installed, check this to redirect /search to /search/google"),
+		"#description" => t("If the Google Search module is installed, check this to redirect <b>/search</b> to <b>/search/google</b>"),
 		"#default_value" => variable_get("ddt_search_google", false),
 		);
 

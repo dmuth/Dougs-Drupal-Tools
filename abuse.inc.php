@@ -79,11 +79,11 @@ function ddt_abuse_form($form_state) {
 			"#title" => t("Search chat logs"),
 			"#description" => t("Search messages in chatlogs for a string. "
 				. "Useful for investigating reports of harassment, abuse, or spam. "
-				. "This is also a very intensive query. "
-				. "Oldest message is from: <b>$oldest_message</b>. "
+				. "This is also a very intensive query.<br/> "
+				. "Oldest message is from: <b>$oldest_message</b>.</br> "
 				. "Please note that if you use this on chatrooms NOT "
-				. "available to all users, you may be violating users' "
-				. "privacy.  I warned ya! "
+				. "available to all users, you may be <b>violating your users' "
+				. "privacy</b>.  I warned ya! "
 			),
 			"#default_value" => $ddt_abuse_chat,
 			);
