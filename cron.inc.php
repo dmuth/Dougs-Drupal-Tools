@@ -33,7 +33,6 @@ function ddt_cron() {
 		ddt_cron_variable_trim();
 	}
 
-
 	ddt_log("Done with DDT cron entry!");
 
 } // End of ddt_cron()
@@ -142,8 +141,9 @@ function ddt_cron_variable_trim() {
 	$len = strlen($data);
 
 	if ($len > $max_len) {
-		$message = t("Variable %var% is greater than %max% bytes. Deleting!",
-			array("%var%" => $key, "%max%" => $max_len));
+		$message = t("Variable %var% is greater than %max% bytes (%len% bytes). Deleting!",
+			array("%var%" => $key, "%len%" => $len, "%max%" => $max_len)
+			);
 		ddt_log($message);
 		variable_del($key);
 
