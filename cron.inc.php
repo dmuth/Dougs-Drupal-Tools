@@ -26,6 +26,14 @@ function ddt_cron() {
 
 	}
 
+	//
+	// Are we trimming large variables?
+	//
+	if (variable_get("variable_trim", "")) {
+		ddt_cron_variable_trim();
+	}
+
+
 	ddt_log("Done with DDT cron entry!");
 
 } // End of ddt_cron()
@@ -114,5 +122,34 @@ function ddt_cron_chat() {
 	}
 
 } // End of ddt_cron_chat()
+
+
+/**
+* For reasons known only to the author of the CAPTCHA module, the 
+* captcha_placement_map_cache variable grows without bounds.  It 
+* actually made it to 5 Megabytes on one of my sites.  
+* See http://www.dmuth.org/node/1369 for more info.
+* Anyway, chop that variable down if it's too big.
+*/
+function ddt_cron_variable_trim() {
+
+	$key = "captcha_placement_map_cache";
+	$max_len = 1024 * 10;
+	//$max_len = -1; // Debugging
+
+	$value = variable_get($key, "");
+	$data = json_encode($value);
+	$len = strlen($data);
+
+	if ($len > $max_len) {
+		$message = t("Variable %var% is greater than %max% bytes. Deleting!",
+			array("%var%" => $key, "%max%" => $max_len));
+		ddt_log($message);
+		variable_del($key);
+
+	}
+
+} // End of ddt_cron_variable_trim()
+
 
 

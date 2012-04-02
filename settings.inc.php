@@ -47,6 +47,14 @@ function ddt_settings_form($form_state) {
 		"#default_value" => variable_get("ddt_spam_bio", false),
 		);
 
+	$retval["settings"]["variable_trim"] = array(
+		"#type" => "checkbox",
+		"#title" => t("Trim captcha_placement_map_cache variable"),
+		"#description" => t("The captcha_placement_map_cache variable "
+			. "grows without bound. Delete it when it grows past 10 K."),
+		"#default_value" => variable_get("variable_trim", false),
+		);
+
 	$retval["settings"]["submit"] = array(
 		"#type" => "submit",
 		"#value" => "Save",
@@ -71,9 +79,11 @@ function ddt_settings_form_submit($form, $form_state) {
 	$search_google = $values["search_google"];
 	$chat_delete = $values["chat_delete"];
 	$spam_bio = $values["spam_bio"];
+	$variable_trim = $values["variable_trim"];
 	variable_set("ddt_search_google", $search_google);
 	variable_set("ddt_chat_delete", $chat_delete);
 	variable_set("ddt_spam_bio", $spam_bio);
+	variable_set("variable_trim", $variable_trim);
 
 	drupal_set_message("Settings updated!");
 
